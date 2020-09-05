@@ -1,11 +1,17 @@
 package com.controllers;
 
+import com.entities_auth.AuthRequest;
 import com.entities_auth.User;
 import com.repositories.UserRepository;
 import com.services.UserService;
+import com.utils.jwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
@@ -20,11 +26,31 @@ public class UserController {
   private UserRepository userRepository;
     @Autowired
     private UserService userService;
+    @Autowired
+    private jwtUtil jwt_util;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     public UserController(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.userRepository = userRepository;
+
+    }
+
+    @PostMapping("/authenticate")
+    public String generateToken(@RequestBody AuthRequest authRequest) throws Exception {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(authRequest.getUser_name(),authRequest.getPass_word())
+            );
+        }catch (Exception e){
+            throw new Exception("Invalid Username or Password");
+        }
+     return  jwt_util.generateToken(authRequest.getUser_name());
+
+
+
 
     }
 

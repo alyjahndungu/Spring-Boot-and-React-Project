@@ -38,7 +38,7 @@ public class UserService {
     }
 
     public User updateUser(User user){
-       User userUpdate = userRepository.findById(user.getId()).orElse(null);
+       User userUpdate = userRepository.findById((long) user.getId()).orElse(null);
        userUpdate.setUsername(user.getUsername());
        userUpdate.setCreatedBy(user.getCreatedBy());
        userUpdate.setUpdatedBy(user.getUpdatedBy());
